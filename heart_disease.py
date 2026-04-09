@@ -302,8 +302,8 @@ try:
     teacher_patient = np.array([[age_input, sex_input, cigs_input,
                                   chol_input, bp_input, glucose_input]])
     teacher_patient_scaled = scaler.transform(teacher_patient)
-    teacher_result = logreg.predict(teacher_patient_scaled)
-    teacher_prob = logreg.predict_proba(teacher_patient_scaled)
+    teacher_result = model.predict(teacher_patient_scaled)
+    teacher_prob = model.predict_proba(teacher_patient_scaled)
 
     print("\n--- PREDICTION RESULT ---")
     if teacher_result[0] == 1:
