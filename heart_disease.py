@@ -283,3 +283,39 @@ print(f"  Plots saved:    5 (in plots/ folder)")
 print("\n" + "=" * 60)
 print("   PROJECT COMPLETED SUCCESSFULLY!")
 print("=" * 60)
+
+# ---- INTERACTIVE PREDICTION FOR ANY NEW PATIENT ----
+print("\n" + "="*60)
+print("INTERACTIVE PATIENT PREDICTION")
+print("="*60)
+print("Enter patient details when prompted.")
+print()
+
+try:
+    age_input = float(input("Enter patient's Age: "))
+    sex_input = float(input("Enter Sex (1=Male, 0=Female): "))
+    cigs_input = float(input("Enter Cigarettes Per Day (0 if non-smoker): "))
+    chol_input = float(input("Enter Total Cholesterol (mg/dL): "))
+    bp_input = float(input("Enter Systolic Blood Pressure (mmHg): "))
+    glucose_input = float(input("Enter Glucose Level (mg/dL): "))
+
+    teacher_patient = np.array([[age_input, sex_input, cigs_input,
+                                  chol_input, bp_input, glucose_input]])
+    teacher_patient_scaled = scaler.transform(teacher_patient)
+    teacher_result = logreg.predict(teacher_patient_scaled)
+    teacher_prob = logreg.predict_proba(teacher_patient_scaled)
+
+    print("\n--- PREDICTION RESULT ---")
+    if teacher_result[0] == 1:
+        print("PREDICTION: HIGH RISK — Patient may develop CHD in 10 years")
+    else:
+        print("PREDICTION: LOW RISK — Patient unlikely to develop CHD in 10 years")
+    print(f"Probability of No CHD: {teacher_prob[0][0]*100:.2f}%")
+    print(f"Probability of CHD:    {teacher_prob[0][1]*100:.2f}%")
+
+except KeyboardInterrupt:
+    print("\nInteractive prediction skipped.")
+
+print("\n" + "="*60)
+print("PROJECT COMPLETE! All plots saved in the 'plots/' folder.")
+print("="*60)
