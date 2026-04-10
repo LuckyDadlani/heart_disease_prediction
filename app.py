@@ -1,12 +1,15 @@
 import os
 import sys
 import pandas as pd
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 
 app = Flask(__name__)
+# Enable Cross-Origin Resource Sharing so the Netlify frontend frontend can query this API
+CORS(app)
 
 # Global variables for model and scaler
 model = None
@@ -48,7 +51,9 @@ init_model()
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
+    return jsonify({
+        "message": "Heart Disease Prediction API is running. Use /predict to query via POST."
+    })
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -61,17 +66,20 @@ def health():
 @app.route("/predict", methods=["POST"])
 def predict():
     if model is None or scaler is None:
-        return render_template("index.html", error="Model is not initialized due to missing data or error.")
+        return jsonify({"error": "Model is not initialized due to missing data or error."}), 500
         
     try:
-        age_input = float(request.form['age'])
-        sex_input = float(request.form['sex'])
-        cigs_input = float(request.form['cigsPerDay'])
-        chol_input = float(request.form['totChol'])
-        sysbp_input = float(request.form['sysBP'])
-        glucose_input = float(request.form['glucose'])
+        data = request.json
+        if not data:
+            return jsonify({"error": "No JSON payload provided."}), 400
 
-        # Notice the order must match feature_cols
+        age_input = float(data.get('age'))
+        sex_input = float(data.get('sex'))
+        cigs_input = float(data.get('cigsPerDay'))
+        chol_input = float(data.get('totChol'))
+        sysbp_input = float(data.get('sysBP'))
+        glucose_input = float(data.get('glucose'))
+
         patient_df = pd.DataFrame([[
             age_input, sex_input, cigs_input, chol_input, sysbp_input, glucose_input
         ]], columns=feature_cols)
@@ -86,13 +94,13 @@ def predict():
         
         result_class = "HIGH RISK" if prediction == 1 else "LOW RISK"
         
-        return render_template("index.html", 
-                               result=result_class, 
-                               prob_0=prob_0, 
-                               prob_1=prob_1,
-                               form_data=request.form)
+        return jsonify({
+            "result": result_class,
+            "prob_1": prob_1,
+            "prob_0": prob_0
+        }), 200
     except Exception as e:
-        return render_template("index.html", error=f"Prediction error: {str(e)}")
+        return jsonify({"error": f"Prediction error: {str(e)}"}), 400
 
 if __name__ == "__main__":
     app.run(debug=False, port=5000)
