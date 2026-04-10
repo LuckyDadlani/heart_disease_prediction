@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Black theme: purely neutral palette */
             --bg-color: #000000;
             --card-bg: #0a0a0a;
             --border-color: #222222;
@@ -16,11 +15,11 @@
             --accent: #ffffff;
             --accent-invert: #000000;
             
-            /* Subdued semantic colors for professional look */
             --high-risk: #ef4444; 
             --low-risk: #10b981;  
             --input-bg: #0f0f0f;
             --input-border: #333333;
+            --bar-bg: #333;
         }
 
         * {
@@ -35,6 +34,7 @@
             color: var(--text-primary);
             line-height: 1.5;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -110,6 +110,7 @@
             font-family: 'Inter', sans-serif;
             font-size: 14px;
             transition: all 0.2s ease;
+            width: 100%;
         }
 
         input:focus, select:focus {
@@ -118,7 +119,10 @@
             background-color: #141414;
         }
 
-        /* Prevent ugly white dropdown appearance on some OS in dark mode */
+        input:invalid {
+            border-color: #ef4444;
+        }
+
         select option {
             background-color: var(--card-bg);
             color: var(--text-primary);
@@ -141,7 +145,6 @@
             opacity: 0.85;
         }
 
-        /* Results Panel */
         .result-panel {
             display: flex;
             flex-direction: column;
@@ -169,27 +172,50 @@
         }
 
         .outcome-value {
-            font-size: 32px;
-            font-weight: 500;
+            font-size: 28px;
+            font-weight: 600;
             letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .high-risk { color: var(--high-risk); }
         .low-risk { color: var(--low-risk); }
 
-        .probability-stat {
+        .prob-bar-container {
+            margin-bottom: 24px;
+        }
+        
+        .prob-label {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             font-size: 13px;
-            padding: 12px 0;
             color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 6px;
         }
-
-        .probability-stat span:last-child {
+        
+        .prob-val {
             color: var(--text-primary);
             font-variant-numeric: tabular-nums;
+        }
+
+        .prob-bar-bg {
+            background-color: var(--bar-bg);
+            border-radius: 4px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .prob-bar-fill-high {
+            background-color: var(--high-risk);
+            height: 100%;
+        }
+
+        .prob-bar-fill-low {
+            background-color: var(--low-risk);
+            height: 100%;
         }
 
         .reference-list {
@@ -205,14 +231,23 @@
 
         .ref-item {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             font-size: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             color: var(--text-secondary);
+            border-left: 2px solid #333;
+            padding-left: 8px;
         }
 
-        .ref-item span:last-child {
-            color: #555555;
+        .ref-title {
+            color: #ccc;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .ref-detail {
+            color: #777;
+            line-height: 1.4;
         }
 
         .error-msg {
@@ -221,12 +256,18 @@
             margin-top: 16px;
             text-align: center;
         }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <div class="dashboard">
-        <!-- Main Form Panel -->
         <div class="panel">
             <h1>Clinical Assessment</h1>
             <p class="subtitle">Logistic Regression &middot; Framingham Study Baseline</p>
@@ -235,7 +276,7 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="age">Age (Years)</label>
-                        <input type="number" id="age" name="age" required value="{{ form_data.age if form_data else '' }}" step="any" placeholder="e.g. 55">
+                        <input type="number" id="age" name="age" required min="1" max="120" title="Age must be between 1 and 120" value="{{ form_data.age if form_data else '' }}" placeholder="1 - 120">
                     </div>
 
                     <div class="form-group">
@@ -249,50 +290,22 @@
 
                     <div class="form-group">
                         <label for="cigsPerDay">Cigarettes / Day</label>
-                        <input type="number" id="cigsPerDay" name="cigsPerDay" required value="{{ form_data.cigsPerDay if form_data else '' }}" step="any" placeholder="0 if non-smoker">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="prevalentStroke">Prevalent Stroke</label>
-                        <select id="prevalentStroke" name="prevalentStroke" required>
-                            <option value="" disabled selected>Select</option>
-                            <option value="1" {% if form_data and form_data.prevalentStroke == '1' %}selected{% endif %}>Yes</option>
-                            <option value="0" {% if form_data and form_data.prevalentStroke == '0' %}selected{% endif %}>No</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="prevalentHyp">Prevalent Hypertension</label>
-                        <select id="prevalentHyp" name="prevalentHyp" required>
-                            <option value="" disabled selected>Select</option>
-                            <option value="1" {% if form_data and form_data.prevalentHyp == '1' %}selected{% endif %}>Yes</option>
-                            <option value="0" {% if form_data and form_data.prevalentHyp == '0' %}selected{% endif %}>No</option>
-                        </select>
+                        <input type="number" id="cigsPerDay" name="cigsPerDay" required min="0" max="100" title="Cigarettes per day must be between 0 and 100" value="{{ form_data.cigsPerDay if form_data else '' }}" placeholder="0 - 100">
                     </div>
 
                     <div class="form-group">
                         <label for="totChol">Total Cholesterol</label>
-                        <input type="number" id="totChol" name="totChol" required value="{{ form_data.totChol if form_data else '' }}" step="any" placeholder="mg/dL">
+                        <input type="number" id="totChol" name="totChol" required min="100" max="600" title="Cholesterol must be between 100 and 600" value="{{ form_data.totChol if form_data else '' }}" step="any" placeholder="100 - 600 mg/dL">
                     </div>
 
                     <div class="form-group">
                         <label for="sysBP">Systolic BP</label>
-                        <input type="number" id="sysBP" name="sysBP" required value="{{ form_data.sysBP if form_data else '' }}" step="any" placeholder="mmHg">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="diaBP">Diastolic BP</label>
-                        <input type="number" id="diaBP" name="diaBP" required value="{{ form_data.diaBP if form_data else '' }}" step="any" placeholder="mmHg">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bmi">BMI</label>
-                        <input type="number" id="bmi" name="bmi" required value="{{ form_data.bmi if form_data else '' }}" step="any" placeholder="Body Mass Index">
+                        <input type="number" id="sysBP" name="sysBP" required min="60" max="300" title="Blood Pressure must be between 60 and 300" value="{{ form_data.sysBP if form_data else '' }}" step="any" placeholder="60 - 300 mmHg">
                     </div>
 
                     <div class="form-group">
                         <label for="glucose">Fasting Glucose</label>
-                        <input type="number" id="glucose" name="glucose" required value="{{ form_data.glucose if form_data else '' }}" step="any" placeholder="mg/dL">
+                        <input type="number" id="glucose" name="glucose" required min="40" max="500" title="Glucose must be between 40 and 500" value="{{ form_data.glucose if form_data else '' }}" step="any" placeholder="40 - 500 mg/dL">
                     </div>
                 </div>
 
@@ -304,7 +317,6 @@
             </form>
         </div>
 
-        <!-- Sidebar / Results Panel -->
         <div class="panel result-panel">
             <h2>Analysis Output</h2>
             
@@ -312,17 +324,32 @@
                 <div class="outcome">
                     <div class="outcome-label">10-Year CHD Risk</div>
                     <div class="outcome-value {% if result == 'HIGH RISK' %}high-risk{% else %}low-risk{% endif %}">
-                        {{ result }}
+                        {% if result == 'HIGH RISK' %}
+                            ⚠️ {{ result }}
+                        {% else %}
+                            ✅ {{ result }}
+                        {% endif %}
                     </div>
                 </div>
 
-                <div class="probability-stat">
-                    <span>Positive Class (CHD)</span>
-                    <span>{{ prob_1 }}%</span>
+                <div class="prob-bar-container">
+                    <div class="prob-label">
+                        <span>Risk Probability</span>
+                        <span class="prob-val">{{ prob_1 }}%</span>
+                    </div>
+                    <div class="prob-bar-bg">
+                        <div class="prob-bar-fill-high" style="width: {{ prob_1 }}%;"></div>
+                    </div>
                 </div>
-                <div class="probability-stat">
-                    <span>Negative Class (No CHD)</span>
-                    <span>{{ prob_0 }}%</span>
+                
+                <div class="prob-bar-container">
+                    <div class="prob-label">
+                        <span>Safe Probability</span>
+                        <span class="prob-val">{{ prob_0 }}%</span>
+                    </div>
+                    <div class="prob-bar-bg">
+                        <div class="prob-bar-fill-low" style="width: {{ prob_0 }}%;"></div>
+                    </div>
                 </div>
             {% else %}
                 <div style="text-align: left; color: #444; font-size: 13px; margin-top: 10px;">
@@ -331,29 +358,29 @@
             {% endif %}
 
             <div class="reference-list">
-                <h3>Normal Reference Ranges</h3>
+                <h3>ℹ Normal Ranges</h3>
                 <div class="ref-item">
-                    <span>T. Cholesterol</span>
-                    <span>&lt; 200 mg/dL</span>
+                    <span class="ref-title">Age</span>
+                    <span class="ref-detail">Any value between 1 and 120.</span>
                 </div>
                 <div class="ref-item">
-                    <span>Systolic BP</span>
-                    <span>&lt; 120 mmHg</span>
+                    <span class="ref-title">Cholesterol (mg/dL)</span>
+                    <span class="ref-detail">&lt; 200 normal, 200-239 borderline, 240+ high.</span>
                 </div>
                 <div class="ref-item">
-                    <span>Fasting Glucose</span>
-                    <span>70 - 99 mg/dL</span>
+                    <span class="ref-title">Blood Pressure (mmHg)</span>
+                    <span class="ref-detail">&lt; 120 normal, 120-129 elevated, 130+ high.</span>
                 </div>
                 <div class="ref-item">
-                    <span>Resting HR</span>
-                    <span>60 - 100 bpm</span>
-                </div>
-                <div class="ref-item">
-                    <span>BMI</span>
-                    <span>18.5 - 24.9</span>
+                    <span class="ref-title">Fasting Glucose (mg/dL)</span>
+                    <span class="ref-detail">70-99 normal, 100-125 prediabetes, 126+ diabetes range.</span>
                 </div>
             </div>
         </div>
+    </div>
+    
+    <div class="footer">
+        Based on the Framingham Heart Study | For educational purposes only — not a substitute for medical advice
     </div>
 
 </body>
