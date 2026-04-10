@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,9 +15,9 @@
             --text-secondary: #888888;
             --accent: #ffffff;
             --accent-invert: #000000;
-            
-            --high-risk: #ef4444; 
-            --low-risk: #10b981;  
+
+            --high-risk: #ef4444;
+            --low-risk: #10b981;
             --input-bg: #0f0f0f;
             --input-border: #333333;
             --bar-bg: #333;
@@ -101,7 +102,8 @@
             color: var(--text-secondary);
         }
 
-        input, select {
+        input,
+        select {
             background-color: var(--input-bg);
             border: 1px solid var(--input-border);
             color: var(--text-primary);
@@ -113,7 +115,8 @@
             width: 100%;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             outline: none;
             border-color: #555555;
             background-color: #141414;
@@ -140,7 +143,7 @@
             cursor: pointer;
             transition: opacity 0.2s;
         }
-        
+
         button.btn-submit:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -186,14 +189,19 @@
             gap: 8px;
         }
 
-        .high-risk { color: var(--high-risk); }
-        .low-risk { color: var(--low-risk); }
+        .high-risk {
+            color: var(--high-risk);
+        }
+
+        .low-risk {
+            color: var(--low-risk);
+        }
 
         .prob-bar-container {
             margin-bottom: 24px;
             display: none;
         }
-        
+
         .prob-label {
             display: flex;
             justify-content: space-between;
@@ -201,7 +209,7 @@
             color: var(--text-secondary);
             margin-bottom: 6px;
         }
-        
+
         .prob-val {
             color: var(--text-primary);
             font-variant-numeric: tabular-nums;
@@ -255,7 +263,7 @@
             font-weight: 500;
             margin-bottom: 4px;
         }
-        
+
         .ref-detail {
             color: #777;
             line-height: 1.4;
@@ -291,6 +299,7 @@
             display: flex;
             justify-content: flex-end;
         }
+
         .api-input {
             width: 300px;
             font-size: 11px;
@@ -298,11 +307,10 @@
         }
     </style>
 </head>
+
 <body>
 
-    <div class="api-config">
-        <input type="text" id="apiUrl" class="api-input" value="http://127.0.0.1:5000/predict" placeholder="Enter Render API URL (e.g. https://your-api.onrender.com/predict)">
-    </div>
+
 
     <div class="dashboard">
         <div class="panel">
@@ -313,7 +321,8 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="age">Age (Years)</label>
-                        <input type="number" id="age" name="age" required min="1" max="120" title="Age must be between 1 and 120" placeholder="1 - 120">
+                        <input type="number" id="age" name="age" required min="1" max="120"
+                            title="Age must be between 1 and 120" placeholder="1 - 120">
                     </div>
 
                     <div class="form-group">
@@ -327,32 +336,38 @@
 
                     <div class="form-group">
                         <label for="cigsPerDay">Cigarettes / Day</label>
-                        <input type="number" id="cigsPerDay" name="cigsPerDay" required min="0" max="100" title="Cigarettes per day must be between 0 and 100" placeholder="0 - 100">
+                        <input type="number" id="cigsPerDay" name="cigsPerDay" required min="0" max="100"
+                            title="Cigarettes per day must be between 0 and 100" placeholder="0 - 100">
                     </div>
 
                     <div class="form-group">
                         <label for="totChol">Total Cholesterol</label>
-                        <input type="number" id="totChol" name="totChol" required min="100" max="600" title="Cholesterol must be between 100 and 600" step="any" placeholder="100 - 600 mg/dL">
+                        <input type="number" id="totChol" name="totChol" required min="100" max="600"
+                            title="Cholesterol must be between 100 and 600" step="any" placeholder="100 - 600 mg/dL">
                     </div>
 
                     <div class="form-group">
                         <label for="sysBP">Systolic BP</label>
-                        <input type="number" id="sysBP" name="sysBP" required min="60" max="300" title="Blood Pressure must be between 60 and 300" step="any" placeholder="60 - 300 mmHg">
+                        <input type="number" id="sysBP" name="sysBP" required min="60" max="300"
+                            title="Blood Pressure must be between 60 and 300" step="any" placeholder="60 - 300 mmHg">
                     </div>
 
                     <div class="form-group">
                         <label for="diaBP">Diastolic BP</label>
-                        <input type="number" id="diaBP" name="diaBP" required min="30" max="200" title="Blood Pressure must be between 30 and 200" step="any" placeholder="30 - 200 mmHg">
+                        <input type="number" id="diaBP" name="diaBP" required min="30" max="200"
+                            title="Blood Pressure must be between 30 and 200" step="any" placeholder="30 - 200 mmHg">
                     </div>
 
                     <div class="form-group">
                         <label for="glucose">Fasting Glucose</label>
-                        <input type="number" id="glucose" name="glucose" required min="40" max="500" title="Glucose must be between 40 and 500" step="any" placeholder="40 - 500 mg/dL">
+                        <input type="number" id="glucose" name="glucose" required min="40" max="500"
+                            title="Glucose must be between 40 and 500" step="any" placeholder="40 - 500 mg/dL">
                     </div>
 
                     <div class="form-group">
                         <label for="BMI">BMI</label>
-                        <input type="number" id="BMI" name="BMI" required min="10" max="80" title="BMI must be between 10 and 80" step="any" placeholder="10 - 80">
+                        <input type="number" id="BMI" name="BMI" required min="10" max="80"
+                            title="BMI must be between 10 and 80" step="any" placeholder="10 - 80">
                     </div>
 
                     <div class="form-group">
@@ -382,7 +397,7 @@
 
         <div class="panel result-panel">
             <h2>Analysis Output</h2>
-            
+
             <div id="awaitMsg" class="await-msg">
                 Awaiting input parameters to generate prediction.
             </div>
@@ -402,7 +417,7 @@
                     <div class="prob-bar-fill-high" id="barHighFill"></div>
                 </div>
             </div>
-            
+
             <div class="prob-bar-container" id="barLowContainer">
                 <div class="prob-label">
                     <span>Safe Probability</span>
@@ -412,29 +427,9 @@
                     <div class="prob-bar-fill-low" id="barLowFill"></div>
                 </div>
             </div>
-
-            <div class="reference-list">
-                <h3>ℹ Normal Ranges</h3>
-                <div class="ref-item">
-                    <span class="ref-title">Age</span>
-                    <span class="ref-detail">Any value between 1 and 120.</span>
-                </div>
-                <div class="ref-item">
-                    <span class="ref-title">Cholesterol (mg/dL)</span>
-                    <span class="ref-detail">&lt; 200 normal, 200-239 borderline, 240+ high.</span>
-                </div>
-                <div class="ref-item">
-                    <span class="ref-title">Blood Pressure (mmHg)</span>
-                    <span class="ref-detail">&lt; 120 normal, 120-129 elevated, 130+ high.</span>
-                </div>
-                <div class="ref-item">
-                    <span class="ref-title">Fasting Glucose (mg/dL)</span>
-                    <span class="ref-detail">70-99 normal, 100-125 prediabetes, 126+ diabetes range.</span>
-                </div>
-            </div>
         </div>
     </div>
-    
+
     <div class="footer">
         Based on the Framingham Heart Study | For educational purposes only — not a substitute for medical advice
     </div>
@@ -442,16 +437,21 @@
     <script>
         document.getElementById('predictForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const btn = document.getElementById('submitBtn');
             const errorMsg = document.getElementById('errorMsg');
-            const apiUrl = document.getElementById('apiUrl').value.trim() || 'http://127.0.0.1:5000/predict';
-            
+
+            // PRODUCTION CONFIGURATION:
+            // If the frontend is hosted separately from the backend (e.g., Netlify for frontend, Render for backend),
+            // replace this URL with your actual deployed backend URL (e.g., 'https://your-api.onrender.com/predict').
+            // If they are hosted together, you can just use '/predict'.
+            const apiUrl = 'http://127.0.0.1:5000/predict';
+
             // clear previous errors / reset state
             errorMsg.style.display = 'none';
             btn.disabled = true;
             btn.innerText = 'Analyzing...';
-            
+
             const payload = {
                 age: document.getElementById('age').value,
                 sex: document.getElementById('sex').value,
@@ -471,41 +471,41 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (!response.ok) {
                     throw new Error(data.error || 'Server returned an error');
                 }
-                
+
                 // Success - Display Data
                 document.getElementById('awaitMsg').style.display = 'none';
-                
+
                 const outcomeContainer = document.getElementById('outcomeContainer');
                 const outcomeValue = document.getElementById('outcomeValue');
-                
+
                 outcomeContainer.style.display = 'block';
                 if (data.result === 'HIGH RISK') {
-                    outcomeValue.innerHTML = `⚠️ ${data.result}`;
+                    outcomeValue.innerHTML = ` ${data.result}`;
                     outcomeValue.className = 'outcome-value high-risk';
                 } else {
-                    outcomeValue.innerHTML = `✅ ${data.result}`;
+                    outcomeValue.innerHTML = ` ${data.result}`;
                     outcomeValue.className = 'outcome-value low-risk';
                 }
 
                 // Show bars
                 document.getElementById('barHighContainer').style.display = 'block';
                 document.getElementById('barLowContainer').style.display = 'block';
-                
+
                 // Allow a tiny delay so the display:block takes effect before css transition
                 setTimeout(() => {
                     document.getElementById('probHighVal').innerText = `${data.prob_1}%`;
                     document.getElementById('barHighFill').style.width = `${data.prob_1}%`;
-                    
+
                     document.getElementById('probLowVal').innerText = `${data.prob_0}%`;
                     document.getElementById('barLowFill').style.width = `${data.prob_0}%`;
                 }, 10);
-                
+
             } catch (err) {
                 errorMsg.innerText = "Error connecting to model API. Check URL or verify backend is running. Details: " + err.message;
                 errorMsg.style.display = 'block';
@@ -516,4 +516,5 @@
         });
     </script>
 </body>
+
 </html>
