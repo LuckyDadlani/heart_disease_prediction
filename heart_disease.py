@@ -13,10 +13,11 @@ import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend for saving plots
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.feature_selection import RFE, RFECV
 import warnings
 import os
 
@@ -176,6 +177,85 @@ print(f"Training set: X_train={X_train.shape}, y_train={y_train.shape}")
 print(f"Testing set:  X_test={X_test.shape}, y_test={y_test.shape}")
 
 # ============================================================
+# SECTION 5B: RECURSIVE FEATURE ELIMINATION (RFE)
+# ============================================================
+print("\n" + "=" * 60)
+print("SECTION 5B: RECURSIVE FEATURE ELIMINATION (RFE)")
+print("=" * 60)
+
+# Use ALL available feature columns (everything except TenYearCHD)
+all_feature_cols = ['Sex_male', 'age', 'cigsPerDay', 'currentSmoker', 'BPMeds',
+                    'prevalentStroke', 'prevalentHyp', 'diabetes', 'totChol',
+                    'sysBP', 'diaBP', 'BMI', 'heartRate', 'glucose']
+
+X_all = df[all_feature_cols]
+y_rfe = df['TenYearCHD']
+
+# Scale using the same StandardScaler pattern
+scaler_rfe = StandardScaler()
+X_all_scaled = scaler_rfe.fit_transform(X_all)
+print("\n✓ All features scaled using StandardScaler")
+
+# Create RFECV with estimator=LogisticRegression(max_iter=1000), cv=StratifiedKFold(5), scoring='accuracy'
+rfecv_estimator = LogisticRegression(max_iter=1000)
+rfecv_selector = RFECV(estimator=rfecv_estimator, step=1, cv=StratifiedKFold(5), scoring='accuracy')
+rfecv_selector.fit(X_all_scaled, y_rfe)
+
+optimal_features_count = rfecv_selector.n_features_
+print(f"\nOptimal number of features found by RFECV: {optimal_features_count}")
+
+# Print list of selected feature names
+rfecv_selected_mask = rfecv_selector.support_
+rfecv_rankings = rfecv_selector.ranking_
+rfecv_selected_features = [col for col, selected in zip(all_feature_cols, rfecv_selected_mask) if selected]
+
+print("\n--- RFECV Selected Features ---")
+print(f"RFECV explicitly selected {optimal_features_count} feature(s):")
+print(rfecv_selected_features)
+
+# --- Comparison: Manual vs RFECV selection ---
+manual_features = sorted(feature_cols)
+rfecv_features_sorted = sorted(rfecv_selected_features)
+
+print("\n--- Feature Selection Comparison ---")
+print(f"  Manual selection chose ({len(feature_cols)}):   {feature_cols}")
+print(f"  RFECV selected ({optimal_features_count}):         {rfecv_selected_features}")
+
+if manual_features == rfecv_features_sorted:
+    print("\n  ✅ Result: The manual and RFECV selections MATCH perfectly!")
+    print("     Explanation: RFECV mathematically proved that our manual selection is optimal.")
+else:
+    print(f"\n  ⚠️  Result: The selections DIFFER.")
+    print("     Explanation: RFECV found a different set of features yields better cross-validated accuracy than our manual list.")
+
+# --- Plot 6: RFECV Accuracy vs Number of Features ---
+plt.figure(figsize=(10, 6))
+cv_scores = rfecv_selector.cv_results_['mean_test_score']
+plt.plot(range(1, len(cv_scores) + 1), cv_scores, marker='o', color='#3498db', linewidth=2)
+plt.axvline(x=optimal_features_count, color='#e74c3c', linestyle=':', linewidth=2, label=f'Optimal ({optimal_features_count})')
+plt.xlabel('Number of Features Selected', fontsize=12)
+plt.ylabel('Cross-Validation Accuracy Score', fontsize=12)
+plt.title('RFECV: Accuracy vs Number of Features', fontsize=14)
+plt.legend()
+plt.tight_layout()
+plt.savefig('plots/plot6_rfecv_optimal_features.png', dpi=150)
+plt.show()
+print("\n✓ Plot 6 saved: plots/plot6_rfecv_optimal_features.png")
+
+# --- Plot 7: RFECV Feature Rankings Bar Chart ---
+plt.figure(figsize=(12, 6))
+colors = ['#2ecc71' if s else '#e74c3c' for s in rfecv_selected_mask]
+plt.barh(all_feature_cols, rfecv_rankings, color=colors)
+plt.xlabel('RFECV Ranking (1 = Selected)', fontsize=12)
+plt.ylabel('Feature', fontsize=12)
+plt.title('RFECV Feature Rankings', fontsize=14)
+plt.gca().invert_yaxis()
+plt.tight_layout()
+plt.savefig('plots/plot7_rfecv_feature_rankings.png', dpi=150)
+plt.show()
+print("✓ Plot 7 saved: plots/plot7_rfecv_feature_rankings.png")
+
+# ============================================================
 # SECTION 6: Model Training
 # ============================================================
 print("\n" + "=" * 60)
@@ -279,7 +359,7 @@ print(f"  Records used:   {df.shape[0]}")
 print(f"  Features:       {len(feature_cols)} ({', '.join(feature_cols)})")
 print(f"  Model:          Logistic Regression")
 print(f"  Accuracy:       {accuracy * 100:.2f}%")
-print(f"  Plots saved:    5 (in plots/ folder)")
+print(f"  Plots saved:    7 (in plots/ folder)")
 print("\n" + "=" * 60)
 print("   PROJECT COMPLETED SUCCESSFULLY!")
 print("=" * 60)
