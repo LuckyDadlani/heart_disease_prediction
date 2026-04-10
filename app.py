@@ -14,7 +14,8 @@ CORS(app)
 # Global variables for model and scaler
 model = None
 scaler = None
-feature_cols = ['age', 'Sex_male', 'cigsPerDay', 'totChol', 'sysBP', 'glucose']
+feature_cols = ['Sex_male', 'age', 'cigsPerDay', 'prevalentStroke', 
+                'prevalentHyp', 'totChol', 'sysBP', 'diaBP', 'BMI', 'glucose']
 
 def init_model():
     global model, scaler
@@ -76,13 +77,25 @@ def predict():
         age_input = float(data.get('age'))
         sex_input = float(data.get('sex'))
         cigs_input = float(data.get('cigsPerDay'))
+        stroke_input = float(data.get('prevalentStroke'))
+        hyp_input = float(data.get('prevalentHyp'))
         chol_input = float(data.get('totChol'))
         sysbp_input = float(data.get('sysBP'))
+        diabp_input = float(data.get('diaBP'))
+        bmi_input = float(data.get('BMI'))
         glucose_input = float(data.get('glucose'))
 
-        patient_df = pd.DataFrame([[
-            age_input, sex_input, cigs_input, chol_input, sysbp_input, glucose_input
-        ]], columns=feature_cols)
+        # Map inputs to ensure Correct Order corresponding to feature_cols
+        input_dict = {
+            'age': age_input, 'Sex_male': sex_input, 'cigsPerDay': cigs_input,
+            'prevalentStroke': stroke_input, 'prevalentHyp': hyp_input,
+            'totChol': chol_input, 'sysBP': sysbp_input, 'diaBP': diabp_input,
+            'BMI': bmi_input, 'glucose': glucose_input
+        }
+        
+        ordered_values = [input_dict[col] for col in feature_cols]
+
+        patient_df = pd.DataFrame([ordered_values], columns=feature_cols)
         
         patient_scaled = scaler.transform(patient_df)
         

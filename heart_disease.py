@@ -164,19 +164,21 @@ print(rfecv_selected_features)
 
 # Comparison
 print("\n--- Feature Selection Comparison ---")
-feature_cols = ['age', 'Sex_male', 'cigsPerDay', 'totChol', 'sysBP', 'glucose']
-manual_features = sorted(feature_cols)
+manual_features = ['age', 'Sex_male', 'cigsPerDay', 'totChol', 'sysBP', 'glucose']
 rfecv_features_sorted = sorted(rfecv_selected_features)
 
-print(f"  Manual selection chose ({len(feature_cols)}):   {feature_cols}")
+print(f"  Manual selection initially chose (6):   {manual_features}")
 print(f"  RFECV selected ({optimal_features_count}):         {rfecv_selected_features}")
 
-if manual_features == rfecv_features_sorted:
+# Let's use RFECV features for exactly optimal accuracy!
+feature_cols = rfecv_selected_features
+
+if sorted(manual_features) == rfecv_features_sorted:
     print("\n  ✅ Result: The manual and RFECV selections MATCH perfectly!")
     print("     Explanation: RFECV mathematically proved that our manual selection is optimal.")
 else:
     print(f"\n  ⚠️  Result: The selections DIFFER.")
-    print("     Explanation: RFECV found a different set of features yields better cross-validated accuracy than our manual list.")
+    print("     Explanation: RFECV found a different set of features yields better cross-validated accuracy than our manual list. We will proceed with RFECV's features.")
 
 # Plot 5: RFECV Accuracy vs Number of Features
 plt.figure(figsize=(10, 6))
@@ -285,11 +287,15 @@ print("SECTION 9: CUSTOM PATIENT PREDICTION")
 print("=" * 60)
 
 patient_data = {
-    'age': 55,
     'Sex_male': 1,
+    'age': 55,
     'cigsPerDay': 20,
+    'prevalentStroke': 0,
+    'prevalentHyp': 1,
     'totChol': 250,
     'sysBP': 140,
+    'diaBP': 90,
+    'BMI': 28.5,
     'glucose': 90
 }
 
@@ -341,11 +347,26 @@ try:
     age_input = float(input("Enter patient's Age: "))
     sex_input = float(input("Enter Sex (1=Male, 0=Female): "))
     cigs_input = float(input("Enter Cigarettes Per Day (0 if non-smoker): "))
+    stroke_input = float(input("Enter Prevalent Stroke (1=Yes, 0=No): "))
+    hyp_input = float(input("Enter Prevalent Hypertension (1=Yes, 0=No): "))
     chol_input = float(input("Enter Total Cholesterol (mg/dL): "))
-    bp_input = float(input("Enter Systolic Blood Pressure (mmHg): "))
+    sysbp_input = float(input("Enter Systolic Blood Pressure (mmHg): "))
+    diabp_input = float(input("Enter Diastolic Blood Pressure (mmHg): "))
+    bmi_input = float(input("Enter BMI: "))
     glucose_input = float(input("Enter Glucose Level (mg/dL): "))
 
-    interactive_patient = pd.DataFrame([[age_input, sex_input, cigs_input, chol_input, bp_input, glucose_input]], columns=feature_cols)
+    # Map inputs to the correctly ordered feature_cols from RFECV
+    input_dict = {
+        'age': age_input, 'Sex_male': sex_input, 'cigsPerDay': cigs_input,
+        'prevalentStroke': stroke_input, 'prevalentHyp': hyp_input,
+        'totChol': chol_input, 'sysBP': sysbp_input, 'diaBP': diabp_input,
+        'BMI': bmi_input, 'glucose': glucose_input
+    }
+    
+    # Ensure order matches feature_cols exactly
+    ordered_values = [input_dict[col] for col in feature_cols]
+
+    interactive_patient = pd.DataFrame([ordered_values], columns=feature_cols)
     interactive_scaled = scaler.transform(interactive_patient)
     interactive_result = model.predict(interactive_scaled)
     interactive_prob = model.predict_proba(interactive_scaled)

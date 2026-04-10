@@ -341,8 +341,36 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="diaBP">Diastolic BP</label>
+                        <input type="number" id="diaBP" name="diaBP" required min="30" max="200" title="Blood Pressure must be between 30 and 200" step="any" placeholder="30 - 200 mmHg">
+                    </div>
+
+                    <div class="form-group">
                         <label for="glucose">Fasting Glucose</label>
                         <input type="number" id="glucose" name="glucose" required min="40" max="500" title="Glucose must be between 40 and 500" step="any" placeholder="40 - 500 mg/dL">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="BMI">BMI</label>
+                        <input type="number" id="BMI" name="BMI" required min="10" max="80" title="BMI must be between 10 and 80" step="any" placeholder="10 - 80">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prevalentStroke">Prevalent Stroke</label>
+                        <select id="prevalentStroke" name="prevalentStroke" required>
+                            <option value="" disabled selected>Select</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prevalentHyp">Prevalent Hypertension</label>
+                        <select id="prevalentHyp" name="prevalentHyp" required>
+                            <option value="" disabled selected>Select</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
                     </div>
                 </div>
 
@@ -430,7 +458,11 @@
                 cigsPerDay: document.getElementById('cigsPerDay').value,
                 totChol: document.getElementById('totChol').value,
                 sysBP: document.getElementById('sysBP').value,
-                glucose: document.getElementById('glucose').value
+                diaBP: document.getElementById('diaBP').value,
+                glucose: document.getElementById('glucose').value,
+                BMI: document.getElementById('BMI').value,
+                prevalentStroke: document.getElementById('prevalentStroke').value,
+                prevalentHyp: document.getElementById('prevalentHyp').value
             };
 
             try {

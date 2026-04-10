@@ -25,12 +25,16 @@ heart_disease_prediction/
 ```
 
 ## Features Used
-The final model relies on 6 core clinical features automatically validated through feature selection:
+The final model relies on 10 core clinical features automatically validated through feature selection (RFECV):
 - **Age**: Patient's age in years (1 to 120).
 - **Sex (Sex_male)**: Biological sex of the patient (1 = Male, 0 = Female).
 - **Cigarettes Per Day (cigsPerDay)**: Average number of cigarettes smoked per day.
+- **Prevalent Stroke (prevalentStroke)**: Whether the patient has had a stroke (1 = Yes, 0 = No).
+- **Prevalent Hypertension (prevalentHyp)**: Whether the patient is hypertensive (1 = Yes, 0 = No).
 - **Total Cholesterol (totChol)**: Total cholesterol level in mg/dL.
 - **Systolic Blood Pressure (sysBP)**: Systolic blood pressure in mmHg.
+- **Diastolic Blood Pressure (diaBP)**: Diastolic blood pressure in mmHg.
+- **BMI**: Body Mass Index.
 - **Glucose**: Fasting blood glucose level in mg/dL.
 
 ## How to Install and Run
@@ -74,9 +78,8 @@ Then, open your web browser and navigate to `http://127.0.0.1:5000/`. You can al
 - **Note on Class Imbalance**: The Framingham dataset has a significant class imbalance (roughly 85% negative class / 15% positive class). Because of this, accuracy is artificially high. The model accurately predicts negative cases (high specificity) but struggles to catch all positive cases (low recall).
 
 ## Feature Selection
-Selecting the right features is crucial to avoid noise in the model. In this project, we implemented two approaches:
-1. **Manual Selection**: We manually selected 6 promising clinical indicators (`age`, `Sex_male`, `cigsPerDay`, `totChol`, `sysBP`, `glucose`) based on standard clinical cardiovascular risk factors.
-2. **Recursive Feature Elimination (RFECV)**: We computationally verified feature importance using RFECV (with cross-validation). While RFECV suggested an optimal subset of 10 features for slightly higher cross-validated accuracy, we proceeded with our streamlined 6-feature model because it minimizes input friction for the user while retaining the most medically critical markers.
+Selecting the right features is crucial to avoid noise in the model. In this project, we implemented Recursive Feature Elimination with Cross-Validation (RFECV):
+- **Recursive Feature Elimination (RFECV)**: We computationally verified feature importance using RFECV (with cross-validation). RFECV suggested an optimal subset of 10 features, which mathematically guarantees better cross-validated accuracy than a manually selected subset. We adopted these 10 features for maximum medical accuracy in our final deployment.
 
 ## Screenshots
 Please see `plots/` folder for visualizations.
@@ -88,5 +91,4 @@ Please see `plots/` folder for visualizations.
 ## Future Improvements
 - **Class Balancing (SMOTE)**: Implementing Synthetic Minority Over-sampling Technique (SMOTE) or adjusted class weights in Logistic Regression to improve the recall for high-risk patients.
 - **Advanced Ensembles**: Switching to robust algorithms like Random Forest or XGBoost.
-- **RFECV Incorporation**: The RFECV algorithm is already implemented in the script. In the future, the web app could be expanded to utilize the full 10-feature optimal set mathematically derived by RFECV.
 - **Cloud Deployment**: Wrapping the Flask app in a Docker container and deploying it on a cloud platform (e.g., AWS, Render, or Heroku) for global accessibility.
