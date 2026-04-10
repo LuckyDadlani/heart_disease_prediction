@@ -338,7 +338,7 @@
                         <span class="prob-val">{{ prob_1 }}%</span>
                     </div>
                     <div class="prob-bar-bg">
-                        <div class="prob-bar-fill-high" style="width: {{ prob_1 }}%;"></div>
+                        <div class="prob-bar-fill-high" data-width="{{ prob_1 }}%"></div>
                     </div>
                 </div>
                 
@@ -348,9 +348,16 @@
                         <span class="prob-val">{{ prob_0 }}%</span>
                     </div>
                     <div class="prob-bar-bg">
-                        <div class="prob-bar-fill-low" style="width: {{ prob_0 }}%;"></div>
+                        <div class="prob-bar-fill-low" data-width="{{ prob_0 }}%"></div>
                     </div>
                 </div>
+
+                <script>
+                    // Apply widths dynamically to avoid IDE CSS validation errors with Jinja syntax
+                    document.querySelectorAll('[data-width]').forEach(function(el) {
+                        el.style.width = el.getAttribute('data-width');
+                    });
+                </script>
             {% else %}
                 <div style="text-align: left; color: #444; font-size: 13px; margin-top: 10px;">
                     Awaiting input parameters to generate prediction.
